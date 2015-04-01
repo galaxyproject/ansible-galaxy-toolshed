@@ -1,5 +1,5 @@
-Galaxy
-======
+Galaxy Tool Shed
+================
 
 An [Ansible][ansible] role for installing and managing [Galaxy][galaxyproject]
 Tool Shed servers.  Despite the name confusion, [Galaxy][galaxyproject] bears no relation
