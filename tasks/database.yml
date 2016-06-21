@@ -17,7 +17,7 @@
   changed_when: False
 
 - name: Create Bootstrap User Info
-  template: src=user_info.xml.j2 dest={{ galaxy_toolshed_server_dir }}/lib/tool_shed/scripts/bootstrap_tool_shed/user_info.xml
+  template: src=user_info.xml.j2 dest={{ galaxy_toolshed_server_dir }}/scripts/tool_shed/bootstrap_tool_shed/user_info.xml
   when: galaxy_toolshed_bootstrap
 
 - name: Create Tool Shed DB
@@ -27,7 +27,7 @@
   when: "'migrate.exceptions.DatabaseNotControlledError' in current_db_version.stderr and not galaxy_toolshed_bootstrap"
 
 - name: Bootstrap Tool Shed DB
-  command: "/bin/bash -c 'cd {{ galaxy_toolshed_server_dir }} && mkdir {{ galaxy_toolshed_config_dir }}/hgweb_config_dir/ && . {{ galaxy_toolshed_venv_dir }}/bin/activate && /bin/bash {{ galaxy_toolshed_server_dir }}/lib/tool_shed/scripts/bootstrap_tool_shed/bootstrap_tool_shed.sh -bootstrap_from_tool_shed https://toolshed.g2.bx.psu.edu > /tmp/ts_bootstrap_output.log  || true '"
+  command: "/bin/bash -c 'cd {{ galaxy_toolshed_server_dir }} && mkdir {{ galaxy_toolshed_config_dir }}/hgweb_config_dir/ && . {{ galaxy_toolshed_venv_dir }}/bin/activate && /bin/bash {{ galaxy_toolshed_server_dir }}/scripts/tool_shed/bootstrap_tool_shed/bootstrap_tool_shed.sh -bootstrap_from_tool_shed https://toolshed.g2.bx.psu.edu > /tmp/ts_bootstrap_output.log  || true '"
   environment:
     GALAXY_EGGS_PATH: "{{ galaxy_toolshed_eggs_path | default(galaxy_toolshed_server_dir ~ '/eggs') }}"
     TOOL_SHED_CONFIG_FILE: "{{ galaxy_toolshed_config_file }}"
