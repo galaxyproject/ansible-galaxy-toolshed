@@ -6,11 +6,11 @@
 
 - name: Install additional Tool Shed config files (static)
   copy: src={{ item.src }} dest={{ item.dest }} backup=yes
-  with_items: galaxy_toolshed_config_files
+  with_items: "{{ galaxy_toolshed_config_files }}"
 
 - name: Install additional Tool Shed config files (template)
   template: src={{ item.src }} dest={{ item.dest }} backup=yes
-  with_items: galaxy_toolshed_config_templates
+  with_items: "{{ galaxy_toolshed_config_templates }"
 
 - name: Create Tool Shed configuration file
   template: src=tool_shed.ini.j2 dest={{ galaxy_toolshed_config_file }} backup=yes
