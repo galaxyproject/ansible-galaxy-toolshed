@@ -1,5 +1,6 @@
 ---
 # handlers file for galaxyproject.galaxy_toolshed
 
-- name: restart galaxy tool shed
-  debug: msg="RESTARTER NOT IMPLEMENTED - Please restart Galaxy manually"
+- name: default restart galaxy tool shed handler
+  debug:
+    msg: "RESTARTER NOT IMPLEMENTED - Please restart Tool Shed manually. You can define your own handler and enable it with `galaxy_toolshed_restart_handler_name`"

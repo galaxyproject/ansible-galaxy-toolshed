@@ -1,8 +1,8 @@
 Galaxy Tool Shed
 ================
 
-An [Ansible][ansible] role for installing and managing [Galaxy][galaxyproject]
-Tool Shed servers.  Despite the name confusion, [Galaxy][galaxyproject] bears no relation
+An [Ansible][ansible] role for managing [Galaxy][galaxyproject] Tool Shed
+servers.  Despite the name confusion, [Galaxy][galaxyproject] bears no relation
 to [Ansible Galaxy][ansiblegalaxy].
 
 This role is not for installing Galaxy servers. [A separate role][galaxyrole]
@@ -66,6 +66,22 @@ you use, and where its configuration files will be placed:
   of files to copy from the control machine.
 - `galaxy_toolshed_config_templates`: List of hashes (with `src` and `dest`
   keys) of templates to fill from the control machine.
+- `galaxy_toolshed_config_style` (default: `ini-paste`): The type of Galaxy
+  configuration file to write, `ini-paste` for the traditional PasteDeploy-style
+  INI file, or `yaml` for the YAML format supported by uWSGI.
+- `galaxy_toolshed_app_config_section` (default: depends on
+  `galaxy_config_style`): The config file section under which the Galaxy config
+  should be placed (and the key in `galaxy_config` in which the Galaxy config
+  can be found. If `galaxy_config_style` is `ini-paste` the default is
+  `app:main`. If `galaxy_config_style` is `yaml`, the default is `tool_shed`.
+- `galaxy_toolshed_uwsgi_yaml_parser` (default: `internal`): Controls whether
+  the `uwsgi` section of the Tool Shed config file will be written in
+  uWSGI-style YAML or real YAML. By default, uWSGI's internal YAML parser does
+  not support real YAML. Set to `libyaml` to write real YAML, if you are using
+  uWSGI that has been compiled with libyaml. For details on the YAML syntax
+  suported by uWSGI, see the documentation in the
+  [galaxyproject.galaxy][galaxyrole] role.
+
 
 Dependencies
 ------------

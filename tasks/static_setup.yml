@@ -22,8 +22,8 @@
 
 - name: Create Tool Shed configuration file
   template:
-    src: tool_shed.ini.j2
+    src: "{{ galaxy_toolshed_config_file_template }}"
     dest: "{{ galaxy_toolshed_config_file }}"
     backup: yes
   notify:
-    - restart galaxy tool shed
+    - "{{ galaxy_toolshed_restart_handler_name | default('default restart galaxy tool shed handler') }}"
