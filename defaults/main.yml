@@ -29,7 +29,7 @@ galaxy_toolshed_app_config_section: "{{ 'tool_shed' if galaxy_toolshed_config_st
 
 # The default Tool Shed configuration, ensures that Galaxy can find all of the configs if galaxy_config_dir !=
 # galaxy_server_dir
-galaxy_toolshed_paste_app_factory: "galaxy.webapps.tool_shed.buildapp:app_factory"
+galaxy_toolshed_paste_app_factory: "tool_shed.webapp.buildapp:app_factory"
 galaxy_toolshed_app_config_default:
   hgweb_config_dir: "{{ galaxy_toolshed_mutable_config_dir }}/hgweb_config_dir"
   #builds_file_path: "{{ galaxy_server_dir }}/tool-data/shared/ucsc/builds.txt.sample"
