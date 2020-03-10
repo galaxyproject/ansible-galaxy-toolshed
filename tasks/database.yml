@@ -2,7 +2,8 @@
 # Manage Tool Shed Database
 
 - name: Get current Tool Shed DB version
-  command: "{{ galaxy_toolshed_venv_dir }}/bin/python {{ galaxy_toolshed_server_dir }}/scripts/manage_db.py -c {{ galaxy_toolshed_config_file }} db_version tool_shed"
+  command: >-
+    {{ galaxy_toolshed_venv_dir }}/bin/python {{ galaxy_toolshed_server_dir }}/scripts/manage_db.py -c {{ galaxy_toolshed_config_file }} db_version tool_shed
   args:
     chdir: "{{ galaxy_toolshed_server_dir }}"
   register: current_db_version
@@ -11,7 +12,8 @@
   when: not ansible_check_mode
 
 - name: Get maximum Tool Shed DB version
-  command: "{{ galaxy_toolshed_venv_dir }}/bin/python {{ galaxy_toolshed_server_dir }}/scripts/manage_db.py -c {{ galaxy_toolshed_config_file }} version tool_shed"
+  command: >-
+    {{ galaxy_toolshed_venv_dir }}/bin/python {{ galaxy_toolshed_server_dir }}/scripts/manage_db.py -c {{ galaxy_toolshed_config_file }} version tool_shed
   args:
     chdir: "{{ galaxy_toolshed_server_dir }}"
   register: max_db_version
@@ -23,21 +25,40 @@
   when: galaxy_toolshed_bootstrap
 
 - name: Create Tool Shed DB
-  command: "{{ galaxy_toolshed_venv_dir }}/bin/python {{ galaxy_toolshed_server_dir }}/scripts/create_db.py -c {{ galaxy_toolshed_config_file }} tool_shed"
+  command: >-
+    {{ galaxy_toolshed_venv_dir }}/bin/python {{ galaxy_toolshed_server_dir }}/scripts/create_db.py -c {{ galaxy_toolshed_config_file }} tool_shed
   args:
     chdir: "{{ galaxy_toolshed_server_dir }}"
   when: "(not ansible_check_mode) and 'migrate.exceptions.DatabaseNotControlledError' in current_db_version.stderr and not galaxy_toolshed_bootstrap"
 
-- name: Bootstrap Tool Shed DB
-  command: "/bin/bash -c 'cd {{ galaxy_toolshed_server_dir }} && mkdir {{ galaxy_toolshed_config_dir }}/hgweb_config_dir/ && . {{ galaxy_toolshed_venv_dir }}/bin/activate && /bin/bash {{ galaxy_toolshed_server_dir }}/scripts/tool_shed/bootstrap_tool_shed/bootstrap_tool_shed.sh -bootstrap_from_tool_shed https://toolshed.g2.bx.psu.edu > /tmp/ts_bootstrap_output.log  || true '"
-  environment:
-    TOOL_SHED_CONFIG_FILE: "{{ galaxy_toolshed_config_file }}"
+- name: Bootstrap Tasks
+  block:
+
+    - name: Create hgweb config dir
+      file:
+        path: "{{ galaxy_toolshed_config_dir }}/hgweb_config_dir"
+        state: directory
+
+    - name: Bootstrap Tool Shed DB
+      command: >-
+        /bin/bash {{ galaxy_toolshed_server_dir }}/scripts/tool_shed/bootstrap_tool_shed/bootstrap_tool_shed.sh
+        -bootstrap_from_tool_shed https://toolshed.g2.bx.psu.edu
+      args:
+        chdir: "{{ galaxy_toolshed_server_dir }}"
+      environment:
+        TOOL_SHED_CONFIG_FILE: "{{ galaxy_toolshed_config_file }}"
+        PATH: "{{ galaxy_toolshed_venv_dir }}/bin:{{ ansible_env.PATH }}"
+        VIRTUAL_ENV: "{{ galazy_toolshed_venv_dir }}"
+
   when: "(not ansible_check_mode) and 'migrate.exceptions.DatabaseNotControlledError' in current_db_version.stderr and galaxy_toolshed_bootstrap"
   become: yes
   become_user: "{{ galaxy_user_name }}"
 
 - name: Upgrade Tool Shed DB
-  command: "{{ galaxy_toolshed_venv_dir }}/bin/python {{ galaxy_toolshed_server_dir }}/scripts/manage_db.py -c {{ galaxy_toolshed_config_file }} upgrade tool_shed"
+  command: >-
+    {{ galaxy_toolshed_venv_dir }}/bin/python {{ galaxy_toolshed_server_dir }}/scripts/manage_db.py -c {{ galaxy_toolshed_config_file }} upgrade tool_shed
   args:
     chdir: "{{ galaxy_toolshed_server_dir }}"
-  when: "(not ansible_check_mode) and current_db_version.stdout != max_db_version.stdout and 'migrate.exceptions.DatabaseNotControlledError' not in current_db_version.stderr"
+  when: >-
+    (not ansible_check_mode) and current_db_version.stdout != max_db_version.stdout
+    and 'migrate.exceptions.DatabaseNotControlledError' not in current_db_version.stderr
